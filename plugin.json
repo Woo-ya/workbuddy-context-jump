@@ -1,0 +1,10 @@
+{
+  "name": "workbuddy-context-jump",
+  "displayName": "WorkBuddy Context Jump",
+  "version": "1.0.0",
+  "description": "WorkBuddy-style right-edge conversation tick rail and hover quick-jump navigator for Antigravity, replacing the default context navigator with active tracking, context state preservation, and layout-shift resilience.",
+  "author": "Woo-ya",
+  "homepage": "https://github.com/Woo-ya/workbuddy-context-jump",
+  "repository": "https://github.com/Woo-ya/workbuddy-context-jump",
+  "logo": "assets/logo.svg"
+}

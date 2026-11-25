@@ -1,0 +1,302 @@
+/* WorkBuddy Context Jump — Styles (context-jump.css)
+ * Matches WorkBuddy's right-edge horizontal tick rail + dark floating quick-jump list,
+ * seamlessly replaces Antigravity's native conversation navigator & Obsidian Prism's left outline.
+ */
+
+/* 1. Cleanly hide native navigator & Obsidian Prism's legacy outline while active
+      (never remove React-owned DOM nodes; preserve them for virtualized turn metadata & fallback). */
+html[data-ag-wb-jump="active"] [data-testid="conversation-navigator"],
+html[data-ag-wb-jump="active"] [data-testid="conversation-navigator-group-card"],
+html[data-ag-wb-jump="active"] .ag-cs-nav-outline-trigger,
+html[data-ag-wb-jump="active"] .ag-cs-nav-outline-popover {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* 2. Theme tokens (Dark default matching WorkBuddy Fig. 1, plus Light theme adaptation) */
+:root {
+  --wb-jump-surface: rgba(29, 30, 34, 0.96);
+  --wb-jump-surface-hover: rgba(255, 255, 255, 0.065);
+  --wb-jump-surface-active: rgba(255, 255, 255, 0.045);
+  --wb-jump-border: rgba(255, 255, 255, 0.095);
+  --wb-jump-shadow: 0 12px 32px rgba(0, 0, 0, 0.46), 0 2px 8px rgba(0, 0, 0, 0.28);
+  --wb-jump-text-muted: rgba(226, 230, 238, 0.46);
+  --wb-jump-text-hover: rgba(244, 246, 250, 0.88);
+  --wb-jump-text-active: #ffffff;
+  --wb-jump-tick-muted: rgba(226, 230, 238, 0.28);
+  --wb-jump-tick-hover: rgba(244, 246, 250, 0.72);
+  --wb-jump-tick-active: #ffffff;
+  --wb-jump-scrollbar: rgba(255, 255, 255, 0.16);
+  --wb-jump-scrollbar-hover: rgba(255, 255, 255, 0.28);
+  --wb-jump-toast-bg: rgba(24, 25, 29, 0.96);
+  --wb-jump-toast-border: rgba(255, 255, 255, 0.14);
+  --wb-jump-toast-text: rgba(244, 246, 250, 0.92);
+  --wb-jump-sonar-ring: rgba(96, 165, 250, 0.52);
+  --wb-jump-sonar-glow: rgba(96, 165, 250, 0.14);
+}
+
+html[data-ag-cs-theme="light"],
+html.light,
+body.theme-light,
+body.light-theme,
+body.light {
+  --wb-jump-surface: rgba(252, 253, 255, 0.96);
+  --wb-jump-surface-hover: rgba(15, 23, 42, 0.055);
+  --wb-jump-surface-active: rgba(15, 23, 42, 0.04);
+  --wb-jump-border: rgba(15, 23, 42, 0.11);
+  --wb-jump-shadow: 0 12px 30px rgba(15, 23, 42, 0.14), 0 2px 8px rgba(15, 23, 42, 0.08);
+  --wb-jump-text-muted: rgba(15, 23, 42, 0.48);
+  --wb-jump-text-hover: rgba(15, 23, 42, 0.84);
+  --wb-jump-text-active: #0f172a;
+  --wb-jump-tick-muted: rgba(15, 23, 42, 0.24);
+  --wb-jump-tick-hover: rgba(15, 23, 42, 0.64);
+  --wb-jump-tick-active: #0f172a;
+  --wb-jump-scrollbar: rgba(15, 23, 42, 0.18);
+  --wb-jump-scrollbar-hover: rgba(15, 23, 42, 0.32);
+  --wb-jump-toast-bg: rgba(255, 255, 255, 0.97);
+  --wb-jump-toast-border: rgba(15, 23, 42, 0.14);
+  --wb-jump-toast-text: #0f172a;
+  --wb-jump-sonar-ring: rgba(37, 99, 235, 0.45);
+  --wb-jump-sonar-glow: rgba(37, 99, 235, 0.10);
+}
+
+/* 3. Host container positioned on the right edge of conversation-view */
+.ag-wb-jump-root {
+  position: fixed;
+  z-index: 45;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ag-wb-jump-root[hidden] {
+  display: none !important;
+}
+
+/* 4. Collapsed Right-Edge Tick Rail (resting entry) */
+.ag-wb-jump-rail {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 6px 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  opacity: 0.92;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.ag-wb-jump-root[data-open="1"] .ag-wb-jump-rail {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ag-wb-jump-rail-tick {
+  display: block;
+  width: 10px;
+  height: 2px;
+  border-radius: 999px;
+  background-color: var(--wb-jump-tick-muted);
+  transition: width 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 150ms ease,
+    opacity 150ms ease;
+}
+
+.ag-wb-jump-rail:hover .ag-wb-jump-rail-tick {
+  background-color: var(--wb-jump-tick-hover);
+}
+
+.ag-wb-jump-rail-tick[data-active="1"] {
+  width: 16px;
+  background-color: var(--wb-jump-tick-active);
+}
+
+/* 5. Expanded Floating Quick-Jump Popover (WorkBuddy Fig. 1 card) */
+.ag-wb-jump-popover {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%) translateX(6px) scale(0.985);
+  width: 248px;
+  max-width: min(264px, calc(100vw - 48px));
+  max-height: min(352px, calc(100vh - 180px));
+  display: flex;
+  flex-direction: column;
+  padding: 8px 6px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  background-color: var(--wb-jump-surface);
+  border: 1px solid var(--wb-jump-border);
+  box-shadow: var(--wb-jump-shadow);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 150ms linear;
+}
+
+.ag-wb-jump-root[data-open="1"] .ag-wb-jump-popover {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(-50%) translateX(0) scale(1);
+}
+
+.ag-wb-jump-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  padding: 0 2px;
+  overscroll-behavior: contain;
+}
+
+.ag-wb-jump-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ag-wb-jump-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ag-wb-jump-list::-webkit-scrollbar-thumb {
+  background: var(--wb-jump-scrollbar);
+  border-radius: 999px;
+}
+
+.ag-wb-jump-list::-webkit-scrollbar-thumb:hover {
+  background: var(--wb-jump-scrollbar-hover);
+}
+
+/* 6. Single Quick-Jump Row: [ truncated prompt text ...   — ] */
+.ag-wb-jump-item {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 8px 6px 10px;
+  margin: 0;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--wb-jump-text-muted);
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 400;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.ag-wb-jump-item:hover,
+.ag-wb-jump-item:focus-visible,
+.ag-wb-jump-item[data-focused="1"] {
+  background-color: var(--wb-jump-surface-hover);
+  color: var(--wb-jump-text-hover);
+}
+
+.ag-wb-jump-item[data-active="1"] {
+  background-color: var(--wb-jump-surface-active);
+  color: var(--wb-jump-text-active);
+  font-weight: 500;
+}
+
+.ag-wb-jump-item-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ag-wb-jump-item-tick {
+  flex: none;
+  display: block;
+  width: 9px;
+  height: 2px;
+  border-radius: 999px;
+  background-color: var(--wb-jump-tick-muted);
+  transition: width 150ms cubic-bezier(0.22, 1, 0.36, 1), background-color 140ms ease;
+}
+
+.ag-wb-jump-item:hover .ag-wb-jump-item-tick,
+.ag-wb-jump-item:focus-visible .ag-wb-jump-item-tick,
+.ag-wb-jump-item[data-focused="1"] .ag-wb-jump-item-tick {
+  width: 12px;
+  background-color: var(--wb-jump-tick-hover);
+}
+
+.ag-wb-jump-item[data-active="1"] .ag-wb-jump-item-tick {
+  width: 15px;
+  background-color: var(--wb-jump-tick-active);
+}
+
+.ag-wb-jump-item[data-virtual="1"] .ag-wb-jump-item-text {
+  font-style: normal;
+  opacity: 0.86;
+}
+
+/* 7. Subtle non-blocking toast for edge cases (missing target / returned to origin) */
+.ag-wb-jump-toast {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  max-width: 248px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background-color: var(--wb-jump-toast-bg);
+  border: 1px solid var(--wb-jump-toast-border);
+  box-shadow: var(--wb-jump-shadow);
+  color: var(--wb-jump-toast-text);
+  font-size: 11.5px;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.ag-wb-jump-toast[data-visible="1"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 8. Target arrival highlight ("sonar" pulse on jumped user message) */
+[data-wb-jump-sonar="1"] {
+  position: relative;
+  border-radius: 12px;
+  box-shadow: 0 0 0 1.5px var(--wb-jump-sonar-ring), 0 0 22px 2px var(--wb-jump-sonar-glow) !important;
+  transition: box-shadow 220ms ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ag-wb-jump-rail,
+  .ag-wb-jump-rail-tick,
+  .ag-wb-jump-popover,
+  .ag-wb-jump-item,
+  .ag-wb-jump-item-tick,
+  .ag-wb-jump-toast {
+    transition: none !important;
+  }
+}

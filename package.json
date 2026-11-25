@@ -1,0 +1,34 @@
+{
+  "name": "workbuddy-context-jump",
+  "version": "1.0.0",
+  "description": "WorkBuddy-style right-edge conversation tick rail and hover quick-jump navigator for Google Antigravity.",
+  "license": "MIT",
+  "author": "Woo-ya",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Woo-ya/workbuddy-context-jump.git"
+  },
+  "homepage": "https://github.com/Woo-ya/workbuddy-context-jump#readme",
+  "bugs": {
+    "url": "https://github.com/Woo-ya/workbuddy-context-jump/issues"
+  },
+  "keywords": [
+    "antigravity",
+    "antigravity-plugin",
+    "workbuddy",
+    "context-jump",
+    "conversation-navigator",
+    "sidecar"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "test": "node --test tests/context-jump.test.mjs",
+    "install:plugin": "node scripts/install.mjs",
+    "uninstall:plugin": "node scripts/uninstall.mjs",
+    "inject": "node scripts/inject.mjs",
+    "remove": "node scripts/remove.mjs",
+    "package": "node scripts/package.mjs"
+  }
+}

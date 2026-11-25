@@ -1,0 +1,10 @@
+{
+  "command": "node",
+  "args": [
+    "daemon.mjs"
+  ],
+  "restart_policy": "always",
+  "display_name": "WorkBuddy Context Jump",
+  "description": "Replaces Antigravity's default conversation navigator with a WorkBuddy-style right-edge tick rail and hover quick-jump list.",
+  "has_web_ui": false
+}
